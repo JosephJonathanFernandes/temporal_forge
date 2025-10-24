@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Healer's Scribe — Results</title>
+    <link href="/static/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body class="p-4">
+    <div class="container">
+      <a href="/" class="btn btn-light mb-3">&larr; Back</a>
+      <h1>🧙‍♂️ The Healer’s Wisdom</h1>
+      <div class="card my-3 insight-card" role="region" aria-label="Insight">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <h4 id="insight-heading">Insight</h4>
+            <p id="insight-text" class="lead mb-0" tabindex="0">{{ result.insight or result.summary }}</p>
+          </div>
+          <div class="text-end">
+            <form method="post" action="/download/json" style="display:inline-block;">
+              <input type="hidden" name="text" value="{{ result.original_text | default('') }}">
+              <button class="btn btn-outline-light btn-sm">Download JSON</button>
+            </form>
+            <form method="post" action="/download/pdf" style="display:inline-block;">
+              <input type="hidden" name="text" value="{{ result.original_text | default('') }}">
+              <button class="btn btn-outline-light btn-sm">Download PDF</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5>✅ Top Effective Cures</h5>
+              <div id="pos_chart_container" aria-hidden="false">
+                {{ result.pos_chart_div | safe }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5>❌ Top Ineffective Cures</h5>
+              <div id="neg_chart_container" aria-hidden="false">
+                {{ result.neg_chart_div | safe }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5>Healer–Cure Network</h5>
+              <div id="network" aria-label="Healer cure network" tabindex="0" style="height:360px; border:1px dashed rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center;">No network data available yet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="accordion" id="rawTextAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingRaw">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRaw" aria-expanded="false" aria-controls="collapseRaw">
+                  View original pasted text
+                </button>
+              </h2>
+              <div id="collapseRaw" class="accordion-collapse collapse" aria-labelledby="headingRaw" data-bs-parent="#rawTextAccordion">
+                <div class="accordion-body" style="white-space:pre-wrap; font-family: monospace;">
+                  {{ result.original_text | default('No original text included') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="filter_healer" class="form-label">Filter by Healer</label>
+          <select id="filter_healer" class="form-select"><option value="">(all)</option></select>
+        </div>
+        <div class="col-md-6">
+          <label for="filter_sentiment" class="form-label">Filter by Sentiment</label>
+          <select id="filter_sentiment" class="form-select"><option value="">(all)</option><option value="positive">Positive</option><option value="negative">Negative</option><option value="neutral">Neutral</option></select>
+        </div>
+      </div>
+
+      
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Compare Healers</h5>
+          <form method="post" action="/analyze" id="compareForm">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="compare_a" class="form-label">Healer A (notes)</label>
+                <textarea id="compare_a" name="compare_a" class="form-control" rows="4" placeholder="Paste healer A notes"></textarea>
+              </div>
+              <div class="col-md-6 mb-2">
+                <label for="compare_b" class="form-label">Healer B (notes)</label>
+                <textarea id="compare_b" name="compare_b" class="form-control" rows="4" placeholder="Paste healer B notes"></textarea>
+              </div>
+            </div>
+            <div class="mt-2">
+              <button class="btn btn-primary" type="submit">Compare and analyze</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4>Records</h4>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#demoModal">Demo notes</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+          <table id="recordsTable" class="table table-sm" role="table" aria-label="Records table">
+            <thead>
+              <tr>
+                <th role="button" tabindex="0" onclick="sortTable(0)" aria-sort="none">Healer</th>
+                <th role="button" tabindex="0" onclick="sortTable(1)" aria-sort="none">Cure</th>
+                <th role="button" tabindex="0" onclick="sortTable(2)" aria-sort="none">Symptom</th>
+                <th role="button" tabindex="0" onclick="sortTable(3)" aria-sort="none">Outcome</th>
+                <th role="button" tabindex="0" onclick="sortTable(4)" aria-sort="none">Sentiment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in result.records %}
+                <tr>
+                  <td>{{ r.healer }}</td>
+                  <td>{{ r.cure }}</td>
+                  <td>{{ r.symptom }}</td>
+                  <td>{{ r.outcome }}</td>
+                  <td>{{ r.sentiment }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo notes modal -->
+    <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="demoModalLabel">Demo notes — what is real vs simulated</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li><strong>Real:</strong> rule-based parsing extracts healer/cure/symptom/outcome and sentiment heuristics.</li>
+              <li><strong>Real:</strong> Charts, filters, exports (CSV/JSON/TXT/PDF) and the records table are live.</li>
+              <li><strong>Simulated:</strong> Transformer summarization and full RAG LLM responses are placeholders in this prototype.</li>
+              <li><strong>Simulated:</strong> The chatbot replies are canned suggestions unless an LLM is connected on the backend.</li>
+            </ul>
+            <p>Demo script recommendation: 1) Paste the sample notes, 2) Click Process, 3) Show the insight and charts, 4) Open chat and ask a question (explain placeholder), 5) Download the Wisdom Scroll PDF.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script id="result-data" type="application/json">{{ result.records | tojson | safe }}</script>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script src="/static/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chat widget -->
+    <div id="chatToggle" class="chat-toggle" role="button" aria-label="Open chat" title="Ask the Healer">
+      💬
+    </div>
+    <div id="chatPanel" class="chat-panel" aria-hidden="true">
+      <div class="chat-header">Ask the Healer (RAG placeholder)</div>
+      <div id="chatLog" class="chat-log" role="log" aria-live="polite"></div>
+      <form id="chatForm" class="chat-input">
+        <input id="chatInput" placeholder="Ask: Which cures worked for fever?" aria-label="Question" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <script src="/static/chat.js"></script>
+    <script src="/static/ui.js"></script>
+  </body>
+</html>

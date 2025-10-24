@@ -9,14 +9,39 @@
   <body class="p-4">
     <div class="container">
       <h1>The Healer's Scribe — Wisdom Extraction</h1>
-      <form method="post" action="/">
+  <form id="processForm" method="post" action="/app" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="text" class="form-label">Paste healer scrolls / notes here:</label>
           <textarea class="form-control" id="text" name="text" rows="10">{{ text }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Process</button>
-        <button type="submit" formaction="/download" formmethod="post" class="btn btn-secondary">Download CSV</button>
+        <div class="mb-3 d-flex gap-2">
+          <div class="flex-fill">
+            <label for="file" class="form-label">Or upload a file (PDF, JSON, TXT):</label>
+            <input class="form-control" type="file" id="file" name="file" accept=".pdf,.json,.txt">
+          </div>
+          <div class="align-self-end">
+            <button id="processBtn" type="submit" class="btn btn-primary">Process</button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <small class="text-muted">Quick actions:</small>
+          <div class="mt-2">
+            <button type="submit" formaction="/download" formmethod="post" class="btn btn-outline-secondary btn-sm">Download CSV</button>
+            <button type="submit" formaction="/download/json" formmethod="post" class="btn btn-outline-secondary btn-sm">Download JSON</button>
+            <button type="submit" formaction="/download/txt" formmethod="post" class="btn btn-outline-secondary btn-sm">Download TXT</button>
+            <button type="submit" formaction="/download/pdf" formmethod="post" class="btn btn-outline-secondary btn-sm">Download PDF</button>
+          </div>
+        </div>
       </form>
+
+      <!-- Processing overlay -->
+      <div id="processingOverlay" class="processing-overlay" style="display:none;">
+        <div class="processing-card">
+          <div class="spinner-border text-dark" role="status"><span class="visually-hidden">Processing...</span></div>
+          <div class="mt-2">Processing the scrolls — extracting wisdom...</div>
+        </div>
+      </div>
 
       {% if summary %}
       <div class="mt-4">
@@ -48,4 +73,19 @@
       <!-- Word cloud removed -->
     </div>
   </body>
+  <!-- Chat widget -->
+  <div id="chatToggle" class="chat-toggle" role="button" aria-label="Open chat" title="Ask the Healer">
+    💬
+  </div>
+  <div id="chatPanel" class="chat-panel" aria-hidden="true">
+    <div class="chat-header">Ask the Healer (RAG placeholder)</div>
+    <div id="chatLog" class="chat-log" role="log" aria-live="polite"></div>
+    <form id="chatForm" class="chat-input">
+      <input id="chatInput" placeholder="Ask: Which cures worked for fever?" aria-label="Question" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/chat.js"></script>
+  <script src="/static/ui.js"></script>
 </html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Healer's Scribe — Landing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+  </head>
+  <body class="p-4">
+    <div class="container text-center">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="display-5">🧙‍♀️ The Healer's Scribe</h1>
+      </div>
+      <!-- Demo modal (landing) -->
+      <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
+      </div>
+      <p class="lead">Turn scattered scrolls into structured wisdom — extract cures, outcomes and discover what works.</p>
+
+      <div class="card mx-auto my-4" style="max-width:900px;">
+        <div class="card-body">
+          <h5>What's this?</h5>
+          <p>Paste messy healer notes or upload files (PDF / JSON / TXT). Our AI pipeline extracts entities, estimates effectiveness, and summarizes the wisdom found within.</p>
+          <a href="/app" class="btn btn-primary btn-lg">Open the Healer's Scribe</a>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <h6>Quick demo</h6>
+          <p>Use the sample notes to see instant insights: top cures, failures, and a one-line "Wisdom" summary.</p>
+        </div>
+        <div class="col-md-6">
+          <h6>Judging highlights</h6>
+          <ul class="text-start">
+            <li>Automatic structuring (NER + sentiment)</li>
+            <li>Interactive dashboard (charts & filters)</li>
+            <li>Export results (CSV/JSON/TXT/PDF)</li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="mt-5 text-muted small">Prototype — prepared for hackathon demo.</footer>
+    </div>
+
+    <!-- Demo modal (landing) -->
+    <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="demoModalLabel">Demo notes — what is real vs simulated</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li><strong>Real:</strong> rule-based parsing extracts healer/cure/symptom/outcome and sentiment heuristics.</li>
+              <li><strong>Real:</strong> Charts, filters, exports (CSV/JSON/TXT/PDF) and the records table are live.</li>
+              <li><strong>Simulated:</strong> Transformer summarization and full RAG LLM responses are placeholders in this prototype.</li>
+              <li><strong>Simulated:</strong> The chatbot replies are canned suggestions unless an LLM is connected on the backend.</li>
+            </ul>
+            <p>Demo script recommendation: 1) Paste the sample notes, 2) Click Process, 3) Show the insight and charts, 4) Open chat and ask a question (explain placeholder), 5) Download the Wisdom Scroll PDF.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
