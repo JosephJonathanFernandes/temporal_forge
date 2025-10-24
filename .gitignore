@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+venv.bak/
+venv_old/
+
+# Pyenv
+.python-version
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+
+# Logs
+*.log
+
+# SQLite
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+secrets/
+
+# Python build artifacts
+*.pyc
+*.pyo
+*.pyd
+
+# Model / cache directories
+spacy_cache/
+transformers_cache/
+hf_cache/
+
+# Large model files
+*.bin
+*.pt
+*.ckpt
+
+# Data
+data/
+*.csv
+*.db
+
+# OS generated files
+Thumbs.db
+desktop.ini
