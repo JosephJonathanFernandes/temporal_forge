@@ -1,4 +1,89 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap');
+/*
+  Design tokens / color system
+  - Use HSL-based tokens when possible so shades are easy to generate and tune.
+  - These tokens provide a neutral ramp, primary accent, semantic colors and surface tokens.
+*/
+:root {
+  /* Neutral ramp (H S% L%) - used for text, surfaces, borders */
+  --neutral-900: 210 6% 8%;   /* h s l */
+  --neutral-800: 210 8% 14%;
+  --neutral-700: 210 8% 22%;
+  --neutral-600: 215 8% 34%;
+  --neutral-500: 215 8% 48%;
+  --neutral-300: 215 10% 78%;
+  --neutral-100: 38 40% 96%; /* warm parchment-like paper */
+
+  /* Primary brand (change --primary-h and --primary-s to adapt) */
+  --primary-h: 215;
+  --primary-s: 90%;
+  --primary-700-l: 34%;
+  --primary-600-l: 45%;
+  --primary-400-l: 62%;
+
+  /* Semantic */
+  --success: 142 61% 36%; /* green */
+  --warning: 42 95% 50%;  /* amber */
+  --danger: 354 65% 45%;   /* red */
+
+  /* Derived semantic foreground colors */
+  --on-primary: 0 0% 100%; /* white */
+  --on-surface: var(--neutral-900);
+
+  /* Surfaces */
+  --bg: hsl(var(--neutral-100));
+  --surface: hsl(40 30% 96%);
+  /* Use the surface token for cards to avoid pure-white backgrounds */
+  --card-bg: var(--surface);
+
+  /* Borders and subtle separators */
+  --border: rgba(16,24,40,0.06);
+
+  /* Focus ring color (semi-transparent primary) */
+  --focus: rgba(37,99,235,0.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-900: 210 6% 94%;
+    --neutral-800: 210 8% 88%;
+    --neutral-700: 210 8% 78%;
+    --neutral-600: 215 8% 64%;
+    --neutral-500: 215 8% 44%;
+    --neutral-300: 215 10% 20%;
+    --neutral-100: 220 10% 8%;
+
+    --bg: hsl(220 8% 8%);
+    --surface: hsl(220 8% 12%);
+    --card-bg: hsl(220 8% 14%);
+    --border: rgba(255,255,255,0.06);
+    --focus: rgba(59,130,246,0.28);
+  }
+}
+
+/* Lightweight utility tokens for use in components */
+.text-muted { color: hsl(var(--neutral-600)); }
+.text-strong { color: hsl(var(--neutral-900)); }
+.bg-surface { background: var(--surface); }
+.card-surface { background: var(--card-bg); border: 1px solid var(--border); }
+
+.focus-ring:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.btn { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; font-weight:600; cursor:pointer; border:1px solid transparent; transition: transform 160ms ease, box-shadow 160ms ease; }
+.btn-primary { background: hsl(var(--primary-h) var(--primary-s) var(--primary-600-l)); color: hsl(var(--on-primary)); }
+.btn-primary:hover { background: hsl(var(--primary-h) var(--primary-s) var(--primary-700-l)); transform: translateY(-2px); }
+.btn-ghost { background: transparent; color: hsl(var(--neutral-900)); border: 1px solid var(--border); }
+.chip { display:inline-block; padding:6px 10px; border-radius:999px; background: hsl(var(--neutral-300)); color: hsl(var(--neutral-900)); font-size:13px; }
+
+/* Status color helpers using CSS color() stack when supported fallback to hsl() if necessary */
+.status-success { background: hsl(var(--success)); color: white; }
+.status-warning { background: hsl(var(--warning)); color: hsl(0 0% 8%); }
+.status-danger { background: hsl(var(--danger)); color: white; }
+
+/* small helper to ensure readable text on colored backgrounds */
+.text-inverse { color: hsl(var(--on-primary)); }
+
+/* end tokens */
 
 /* Medieval / parchment font stack with graceful offline fallback */
 body {
@@ -22,7 +107,7 @@ body {
   z-index: 2000;
 }
 .processing-card {
-  background: #fffaf0;
+  background: var(--card-bg);
   padding: 20px 28px;
   border-radius: 10px;
   box-shadow: 0 6px 30px rgba(0,0,0,0.25);
@@ -43,8 +128,8 @@ th[role="button"]:hover, th[role="button"]:focus { transform: translateY(-2px); 
 .card { transition: transform 220ms ease, box-shadow 220ms ease; }
 .card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
 
-/* Network placeholder styling */
-#network { background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.0)); }
+/* Network placeholder styling (subtle overlay tuned for non-white surfaces) */
+#network { background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.0)); }
 
 /* Chat widget */
 .chat-toggle {
@@ -69,7 +154,7 @@ th[role="button"]:hover, th[role="button"]:focus { transform: translateY(-2px); 
   bottom: 90px;
   width: 320px;
   max-height: 60vh;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
   overflow: hidden;
@@ -79,12 +164,12 @@ th[role="button"]:hover, th[role="button"]:focus { transform: translateY(-2px); 
 }
 .chat-panel.open { display: flex; }
 .chat-header { background:#6f42c1; color:#fff; padding:10px 12px; font-weight:600; }
-.chat-log { padding: 12px; overflow:auto; flex:1; background: #fbfbfd; }
+.chat-log { padding: 12px; overflow:auto; flex:1; background: var(--surface); }
 .chat-msg { margin-bottom:8px; padding:8px 10px; border-radius:8px; max-width:85%; }
 .chat-user { background: #e6f0ff; margin-left:auto; }
 .chat-system { background: #f1f3f5; margin-right:auto; }
-.chat-input { padding:8px; border-top:1px solid #eee; display:flex; gap:8px; }
-.chat-input input { flex:1; padding:8px 10px; border-radius:6px; border:1px solid #ddd; }
+.chat-input { padding:8px; border-top:1px solid var(--border); display:flex; gap:8px; }
+.chat-input input { flex:1; padding:8px 10px; border-radius:6px; border:1px solid var(--border); }
 .chat-input button { background:#6f42c1; color:#fff; border:none; padding:8px 12px; border-radius:6px; }
 
 /* timestamp in messages */
