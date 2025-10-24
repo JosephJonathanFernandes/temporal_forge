@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, jsonify
 from models.nlp_pipeline import process_scrolls
 import pandas as pd
 import plotly.express as px
@@ -145,18 +145,117 @@ def landing():
     return render_template('landing.html')
 
 
+# Lightweight JSON health endpoint
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'ok'})
+
+
+# JSON API: synchronous processing endpoint
+@app.route('/api/process', methods=['POST'])
+def api_process():
+    """Accept JSON or form data with a 'text' field and return JSON processing result.
+
+    Example JSON: {"text": "Healer A used garlic for infection, it worked."}
+    """
+    # extract text from JSON body or form-data or raw body
+    text = None
+    if request.is_json:
+        data = request.get_json(silent=True)
+        if isinstance(data, dict):
+            text = data.get('text')
+    else:
+        # form data
+        text = request.form.get('text')
+        # fallback to raw body
+        if not text and request.data:
+            try:
+                text = request.data.decode('utf-8')
+            except Exception:
+                text = None
+
+    if not text or not str(text).strip():
+        return make_response((json.dumps({'error': 'no text provided'}), 400, {'Content-Type': 'application/json'}))
+
+    try:
+        result = process_scrolls(text)
+        # ensure keys exist for stable clients
+        result.setdefault('records', [])
+        result.setdefault('cures_pos_counts', {})
+        result.setdefault('cures_neg_counts', {})
+        result.setdefault('keywords', [])
+        result.setdefault('summary', '')
+        result.setdefault('entities', {})
+        result.setdefault('topics', [])
+        result['original_text'] = text
+        # return JSON
+        return make_response((json.dumps(result, ensure_ascii=False), 200, {'Content-Type': 'application/json'}))
+    except Exception as e:
+        app.logger.exception('Processing failed')
+        return make_response((json.dumps({'error': 'processing_failed'}), 500, {'Content-Type': 'application/json'}))
+
+
+@app.route('/api/similar', methods=['POST'])
+def api_similar():
+    """Find similar cases to a given query text.
+    
+    Example JSON: {"query": "used garlic for infection", "text": "full healer notes..."}
+    """
+    from models.nlp_pipeline import find_similar_cases
+    
+    data = request.get_json(silent=True) if request.is_json else {}
+    query = data.get('query') or request.form.get('query')
+    text = data.get('text') or request.form.get('text')
+    top_n = int(data.get('top_n', 3))
+    
+    if not query:
+        return make_response((json.dumps({'error': 'no query provided'}), 400, {'Content-Type': 'application/json'}))
+    
+    if not text:
+        return make_response((json.dumps({'error': 'no text data provided'}), 400, {'Content-Type': 'application/json'}))
+    
+    try:
+        # Process the text to get records
+        result = process_scrolls(text)
+        records = result.get('records', [])
+        
+        # Find similar cases
+        similar = find_similar_cases(query, records, top_n=top_n)
+        
+        response = {
+            'query': query,
+            'similar_cases': similar,
+            'count': len(similar)
+        }
+        return make_response((json.dumps(response, ensure_ascii=False), 200, {'Content-Type': 'application/json'}))
+    except Exception as e:
+        app.logger.exception('Similar case search failed')
+        return make_response((json.dumps({'error': 'search_failed'}), 500, {'Content-Type': 'application/json'}))
+
+
 @app.route('/ask-rag', methods=['POST'])
 def ask_rag():
-    # Placeholder RAG endpoint — returns a canned response.
-    # In a full build this would run retrieval over the extracted knowledge and call an LLM.
+    # Enhanced Q&A endpoint using extracted knowledge
     q = request.form.get('question') or request.json.get('question') if request.is_json else None
+    text = request.form.get('text') or request.json.get('text') if request.is_json else None
+    
     if not q:
         return make_response((json.dumps({'error': 'no question provided'}), 400, {'Content-Type':'application/json'}))
+    
+    # If text is provided, process it and answer the question
+    if text:
+        from models.nlp_pipeline import answer_question
+        result = process_scrolls(text)
+        records = result.get('records', [])
+        answer_text = answer_question(q, records)
+    else:
+        answer_text = "No text data provided. Please include 'text' field with healer notes to analyze."
+    
     answer = {
-        'answer': "RAG placeholder: retrieval + LLM not enabled in this prototype.\nSuggestion: 'Garlic appears most effective for infections' (derived from stats).",
+        'answer': answer_text,
         'question': q
     }
-    return make_response((json.dumps(answer), 200, {'Content-Type':'application/json'}))
+    return make_response((json.dumps(answer, ensure_ascii=False), 200, {'Content-Type':'application/json'}))
     
 
 

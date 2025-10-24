@@ -9,8 +9,9 @@
   </head>
   <body class="p-4">
     <div class="container">
+      <div id="result-data" data-original-text="{{ result.original_text | default('') }}" style="display:none;"></div>
       <a href="/" class="btn btn-light mb-3">&larr; Back</a>
-      <h1>🧙‍♂️ The Healer’s Wisdom</h1>
+      <h1>🧙‍♂️ The Healer's Wisdom</h1>
       <div class="card my-3 insight-card" role="region" aria-label="Insight">
         <div class="card-body d-flex align-items-center justify-content-between">
           <div>
@@ -32,9 +33,9 @@
 
       <div class="row">
         <div class="col-md-6">
-          <div class="card mb-3">
+          <div class="card chart-card mb-3">
             <div class="card-body">
-              <h5>✅ Top Effective Cures</h5>
+              <h5 class="card-title-icon">✅ Top Effective Cures</h5>
               <div id="pos_chart_container" aria-hidden="false">
                 {{ result.pos_chart_div | safe }}
               </div>
@@ -43,9 +44,9 @@
         </div>
 
         <div class="col-md-6">
-          <div class="card mb-3">
+          <div class="card chart-card mb-3">
             <div class="card-body">
-              <h5>❌ Top Ineffective Cures</h5>
+              <h5 class="card-title-icon">❌ Top Ineffective Cures</h5>
               <div id="neg_chart_container" aria-hidden="false">
                 {{ result.neg_chart_div | safe }}
               </div>
@@ -56,7 +57,7 @@
 
       <div class="row mb-4">
         <div class="col-12">
-          <div class="card">
+          <div class="card network-card">
             <div class="card-body">
               <h5>Healer–Cure Network</h5>
               <div id="network" aria-label="Healer cure network" tabindex="0" style="height:360px; border:1px dashed rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center;">No network data available yet.</div>
@@ -95,6 +96,57 @@
         </div>
       </div>
 
+      <!-- WOW Feature: Wisdom Timeline -->
+      <!-- WOW Feature: Wisdom Timeline -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>📅 Wisdom Timeline</h5>
+          <p class="text-muted small">Track how cure effectiveness evolved across records</p>
+          <div id="timelineChart" style="height: 300px;"></div>
+        </div>
+      </div>
+
+      <!-- WOW Feature: Q&A Bot -->
+      <div class="card mb-4 qna-card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h5 class="mb-2">💬 Ask the Healer Bot</h5>
+              <p class="text-muted small mb-0">Get instant answers about cures, symptoms, and treatment effectiveness from your knowledge base</p>
+              <div class="mt-3">
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-light text-dark">💊 "Which cures worked for fever?"</span>
+                  <span class="badge bg-light text-dark">🌿 "Best treatments for infections"</span>
+                  <span class="badge bg-light text-dark">❌ "Which cures failed?"</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <button class="btn btn-magical btn-lg w-100 py-3" onclick="openChatBot()">
+                <span class="btn-icon">🤖</span> Open Q&A Bot
+              </button>
+              <small class="text-muted d-block mt-2">Click to start asking questions</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WOW Feature: Similar Case Finder -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>🔍 Find Similar Cases</h5>
+          <p class="text-muted small">Enter a symptom or cure to find the most similar historical cases</p>
+          <div class="row">
+            <div class="col-md-8">
+              <input type="text" id="similarQuery" class="form-control" placeholder="e.g., 'garlic for infection' or 'fever treatment'" />
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary w-100" onclick="findSimilarCases()">Find Similar</button>
+            </div>
+          </div>
+          <div id="similarResults" class="mt-3"></div>
+        </div>
+      </div>
       
       <div class="card mb-4">
         <div class="card-body">
@@ -138,12 +190,20 @@
             </thead>
             <tbody>
               {% for r in result.records %}
-                <tr>
-                  <td>{{ r.healer }}</td>
-                  <td>{{ r.cure }}</td>
-                  <td>{{ r.symptom }}</td>
+                <tr class="table-row-hover">
+                  <td><span class="badge badge-healer">{{ r.healer }}</span></td>
+                  <td><strong>{{ r.cure }}</strong></td>
+                  <td><small class="text-muted">{{ r.symptom }}</small></td>
                   <td>{{ r.outcome }}</td>
-                  <td>{{ r.sentiment }}</td>
+                  <td>
+                    {% if r.sentiment == 'positive' %}
+                      <span class="sentiment-positive">✓ Positive</span>
+                    {% elif r.sentiment == 'negative' %}
+                      <span class="sentiment-negative">✗ Negative</span>
+                    {% else %}
+                      <span class="sentiment-neutral">○ Neutral</span>
+                    {% endif %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -177,7 +237,7 @@
       </div>
     </div>
 
-  <script id="result-data" type="application/json">{{ result.records | tojson | safe }}</script>
+  <script id="records-data-json" type="application/json">{{ result.records | tojson | safe }}</script>
   <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
   <script src="/static/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -195,5 +255,7 @@
     </div>
     <script src="/static/chat.js"></script>
     <script src="/static/ui.js"></script>
+    <script src="/static/chat_opener.js"></script>
   </body>
 </html>
+

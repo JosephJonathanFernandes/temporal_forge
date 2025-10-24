@@ -1,7 +1,11 @@
 Healer A used herb willow for fever, it worked well.
-Healer B used honey for cough, patients improved.
-Healer C tried willow for infection but results were poor.
+Healer B used honey for cough; patients improved after two days.
+Healer C tried willow for infection, but results were poor.
 Healer Anna used garlic for infections — patients healed quickly.
 Healer John used saltwater for fever — it didn't help.
-Dr. Old used poultice of herbs for wound, some improvement noted.
+Dr. Old used a poultice of mixed herbs on the wound; some improvement noted.
 Elder Mira applied crushed mint for stomach ache, it helped a bit.
+Brother Tomas brewed chamomile tea for sleeplessness; it aided sleep.
+Healer Signe administered willow bark tincture for fever and fever broke.
+Healer Liao attempted river clay poultice for inflammation but condition worsened.
+Healer Noor used fermented honey for cough, no improvement observed.

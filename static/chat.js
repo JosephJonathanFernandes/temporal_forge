@@ -40,10 +40,17 @@ document.addEventListener('DOMContentLoaded', function(){
       appendMessage('system', 'Thinking...');
 
       try {
+        // Get original text from hidden data attribute
+        const resultData = document.getElementById('result-data');
+        const originalText = resultData ? resultData.getAttribute('data-original-text') : '';
+        
         const res = await fetch('/ask-rag', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: q })
+          body: JSON.stringify({ 
+            question: q,
+            text: originalText || ''
+          })
         });
         const data = await res.json();
         // remove the 'Thinking...' placeholder (last system message)

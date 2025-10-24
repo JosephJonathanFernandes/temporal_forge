@@ -7,23 +7,107 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/styles.css" rel="stylesheet">
   </head>
-  <body class="p-4">
-    <div class="container text-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="display-5">🧙‍♀️ The Healer's Scribe</h1>
-      </div>
-      <!-- Demo modal (landing) -->
-      <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
-      </div>
-      <p class="lead">Turn scattered scrolls into structured wisdom — extract cures, outcomes and discover what works.</p>
-
-      <div class="card mx-auto my-4" style="max-width:900px;">
-        <div class="card-body">
-          <h5>What's this?</h5>
-          <p>Paste messy healer notes or upload files (PDF / JSON / TXT). Our AI pipeline extracts entities, estimates effectiveness, and summarizes the wisdom found within.</p>
-          <a href="/app" class="btn btn-primary btn-lg">Open the Healer's Scribe</a>
+  <body class="landing-page">
+    <!-- Animated particles background -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="scroll-decoration scroll-left">📜</div>
+      <div class="scroll-decoration scroll-right">📜</div>
+      <div class="container text-center py-5">
+        <div class="hero-content">
+          <div class="mystical-orb">✨</div>
+          <h1 class="display-3 mb-4 hero-title animate-fade-in">
+            <span class="gradient-text">The Healer's Scribe</span>
+          </h1>
+          <p class="lead mb-4 hero-subtitle animate-fade-in" style="animation-delay: 0.2s">Transform ancient scrolls into structured wisdom</p>
+          <p class="hero-description mb-5 animate-fade-in" style="animation-delay: 0.4s">Extract cures, analyze outcomes, and discover healing patterns hidden in centuries of scattered notes</p>
+          <a href="/app" class="btn btn-magical btn-lg px-5 py-3 animate-fade-in" style="animation-delay: 0.6s">
+            <span class="btn-icon">🪄</span> Begin Your Journey
+          </a>
         </div>
       </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container my-5">
+      <div class="row g-4">
+        <div class="col-md-4 animate-slide-up" style="animation-delay: 0.1s">
+          <div class="feature-card card h-100">
+            <div class="card-body text-center">
+              <div class="feature-icon">🔮</div>
+              <h5 class="card-title">AI-Powered Extraction</h5>
+              <p class="card-text">Advanced NLP identifies healers, cures, symptoms, and outcomes from unstructured ancient texts</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 animate-slide-up" style="animation-delay: 0.2s">
+          <div class="feature-card card h-100">
+            <div class="card-body text-center">
+              <div class="feature-icon">📊</div>
+              <h5 class="card-title">Visual Analytics</h5>
+              <p class="card-text">Interactive charts, timelines, and network graphs reveal healing patterns and effectiveness trends</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 animate-slide-up" style="animation-delay: 0.3s">
+          <div class="feature-card card h-100">
+            <div class="card-body text-center">
+              <div class="feature-icon">💬</div>
+              <h5 class="card-title">Intelligent Q&A</h5>
+              <p class="card-text">Ask questions about treatments and get instant answers from your knowledge base</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="container my-5">
+      <h2 class="text-center mb-5 gradient-text">How It Works</h2>
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="step-card text-center">
+            <div class="step-number">1</div>
+            <h6>Upload Scrolls</h6>
+            <p class="small text-muted">Paste text or upload PDF/TXT files</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="step-card text-center">
+            <div class="step-number">2</div>
+            <h6>AI Processing</h6>
+            <p class="small text-muted">NLP extracts entities & sentiment</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="step-card text-center">
+            <div class="step-number">3</div>
+            <h6>Explore Insights</h6>
+            <p class="small text-muted">View charts, timeline & network</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="step-card text-center">
+            <div class="step-number">4</div>
+            <h6>Export Wisdom</h6>
+            <p class="small text-muted">Download as CSV, JSON, or PDF</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section text-center py-5 my-5">
+      <div class="container">
+        <h2 class="mb-4 gradient-text">Ready to Unlock Ancient Wisdom?</h2>
+        <p class="lead mb-4">Join healers worldwide in discovering what truly works</p>
+        <a href="/app" class="btn btn-magical btn-lg px-5 py-3">
+          <span class="btn-icon">📜</span> Start Processing Scrolls
+        </a>
+      </div>
+    </div>
 
       <div class="row mt-4">
         <div class="col-md-6">
@@ -67,5 +151,34 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Create animated particles
+      function createParticles() {
+        const container = document.getElementById('particles');
+        const particles = ['✨', '⭐', '💫', '🌟', '✦'];
+        for (let i = 0; i < 20; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 5 + 's';
+          particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+          container.appendChild(particle);
+        }
+      }
+      createParticles();
+      
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    </script>
   </body>
 </html>
+
