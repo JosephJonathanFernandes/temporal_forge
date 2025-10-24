@@ -30,18 +30,34 @@ def classify_sentiment(text: str) -> str:
 
 
 def extract_healer(text: str) -> str:
-    # capture titles and names: Healer Anna, Dr. Old, Elder Mira, Brother Tomas, Healer A
-    m = re.search(r"(?:Healer|Dr|Doctor|Elder|Brother|Sister|Sr|Mrs|Mr|Ms)\.?\s+([A-Z][a-zA-Z'-.]+)", text)
+    """Extract healer name from text with improved pattern matching."""
+    # Pattern 1: Titles + Names (Healer Anna, Dr. Old, Elder Mira, etc.)
+    # Handle "Dr." specially to avoid splitting "Dr. Old" incorrectly
+    m = re.search(r"(?:Healer|Dr\.?|Doctor|Elder|Brother|Sister|Sr|Mrs|Mr|Ms)\s+([A-Z][a-zA-Z'-.]+)", text)
     if m:
         return m.group(1)
-    # Healer + single letter or name like 'Healer A' or 'Healer B'
+    
+    # Pattern 2: Single letter healers (Healer A, Healer B, etc.)
     m2 = re.search(r"Healer\s+([A-Z])\b", text)
     if m2:
         return m2.group(1)
-    # try name at sentence start
-    m3 = re.search(r"^([A-Z][a-zA-Z'-.]+)\s+(used|applied|tried|administered|gave|brewed)", text)
+    
+    # Pattern 3: Name at sentence start with action verbs
+    m3 = re.search(r"^([A-Z][a-zA-Z'-.]+)\s+(used|applied|tried|administered|gave|brewed|attempted|prepared|made|created)", text)
     if m3:
-        return m3.group(1)
+        name = m3.group(1)
+        # Filter out common false positives
+        if name.lower() not in ['the', 'a', 'an', 'and', 'but', 'or', 'for']:
+            return name
+    
+    # Pattern 4: Fallback - capitalized word before action verbs anywhere in text
+    m4 = re.search(r"\b([A-Z][a-zA-Z]{2,})\s+(used|applied|tried|administered|gave|brewed|attempted|prepared)", text)
+    if m4:
+        name = m4.group(1)
+        # Filter out common words
+        if name.lower() not in ['healer', 'doctor', 'elder', 'brother', 'sister', 'the', 'a', 'an']:
+            return name
+    
     return "Unknown"
 
 
@@ -87,20 +103,29 @@ def parse_text(text: str) -> List[Dict]:
     records = []
     # Normalize whitespace
     text = re.sub(r"\s+", " ", text.replace('\r', ' ')).strip()
-    # Split into candidate sentences by newlines, semicolons, em-dash, or punctuation
+    # Split ONLY by newlines and semicolons (keep em-dashes as they connect outcomes)
     raw_lines = []
-    for part in re.split(r"\n+|;|\u2014|\u2013", text):
+    for part in re.split(r"\n+|;", text):
         part = part.strip()
         if not part:
             continue
-        # further split on sentence boundaries
-        pieces = [s.strip() for s in re.split(r"(?<=[.!?])\s+", part) if s.strip()]
+        # DON'T split on periods if they're part of titles (Dr., Mr., etc.)
+        # Only split on sentence-ending punctuation followed by capital letter or common starters
+        pieces = [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-Z]|Healer|Dr|Doctor|Elder|Brother|Sister)", part) if s.strip()]
         raw_lines.extend(pieces)
     lines = raw_lines
 
     for line in lines:
         healer = extract_healer(line)
         cure, symptom, outcome = extract_cure_and_symptom(line)
+        
+        # Skip fragments without healers AND without cure information (likely sentence fragments)
+        # Also skip very short fragments that start with lowercase (continuation sentences)
+        if healer == "Unknown" and not cure and len(line.split()) < 5:
+            continue
+        if healer == "Unknown" and not cure and line and line[0].islower():
+            continue
+        
         # if outcome blank, try to capture trailing sentiment words
         if not outcome:
             # everything after last comma

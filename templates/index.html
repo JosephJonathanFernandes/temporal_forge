@@ -25,9 +25,9 @@
             
             <!-- Textarea Section -->
             <div class="mb-4">
-              <label for="text" class="form-label d-flex align-items-center gap-2">
-                <span class="label-icon">📜</span>
-                <span>Paste Your Healing Scrolls</span>
+              <label for="text" class="form-label d-flex align-items-center gap-2 justify-content-between">
+                <span><span class="label-icon">📜</span> Paste Your Healing Scrolls</span>
+                <small class="text-muted fst-italic" style="font-weight: 400;">Tip: Press Ctrl+Enter to submit</small>
               </label>
               <textarea 
                 class="form-control scroll-textarea" 
@@ -157,7 +157,29 @@ Healer Signe administered willow bark tincture for fever and fever broke.
 Healer Liao attempted river clay poultice for inflammation but condition worsened.
 Healer Noor used fermented honey for cough, no improvement observed.`;
         document.getElementById('text').value = sampleText;
+        // Visual feedback
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ Loaded!';
+        btn.classList.add('btn-success');
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('btn-success');
+        }, 1500);
       }
+
+      // Keyboard shortcut: Ctrl+Enter to submit
+      document.getElementById('text').addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          document.querySelector('form').submit();
+        }
+      });
+
+      // Auto-focus on textarea when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('text').focus();
+      });
     </script>
   </body>
   <!-- Chat widget -->

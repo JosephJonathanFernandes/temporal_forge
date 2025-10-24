@@ -8,6 +8,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body class="p-4">
+    <!-- Success Toast -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+      <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            ✨ Analysis complete! {{ result.records|length }} records processed.
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <div id="result-data" data-original-text="{{ result.original_text | default('') }}" style="display:none;"></div>
       <a href="/" class="btn btn-light mb-3">&larr; Back</a>
@@ -241,6 +253,23 @@
   <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
   <script src="/static/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Show success toast on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const toastEl = document.getElementById('successToast');
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+      
+      // Keyboard shortcut: Press 'b' to go back
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'b' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          window.location.href = '/';
+        }
+      });
+    });
+  </script>
+  
     <!-- Chat widget -->
     <div id="chatToggle" class="chat-toggle" role="button" aria-label="Open chat" title="Ask the Healer">
       💬

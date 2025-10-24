@@ -92,10 +92,13 @@ function findSimilarCases() {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({query: query, text: originalText || document.querySelector('textarea[name="text"]')?.value || ''})
   })
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+    return res.json();
+  })
   .then(data => {
     if (data.error) {
-      resultsDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+      resultsDiv.innerHTML = `<div class="alert alert-danger">⚠️ ${data.error}</div>`;
       return;
     }
     
@@ -118,13 +121,27 @@ function findSimilarCases() {
       html += '</div>';
       resultsDiv.innerHTML = html;
     } else {
-      resultsDiv.innerHTML = '<div class="alert alert-info">No similar cases found</div>';
+      resultsDiv.innerHTML = '<div class="alert alert-info">🔍 No similar cases found. Try a different query.</div>';
     }
   })
   .catch(err => {
-    resultsDiv.innerHTML = '<div class="alert alert-danger">Search failed. Please try again.</div>';
+    console.error('Similar cases error:', err);
+    resultsDiv.innerHTML = '<div class="alert alert-danger">❌ Search failed. Please try again or check your connection.</div>';
   });
 }
+
+// Add keyboard shortcut for Similar Case search (Enter key)
+document.addEventListener('DOMContentLoaded', function() {
+  const similarQuery = document.getElementById('similarQuery');
+  if (similarQuery) {
+    similarQuery.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        findSimilarCases();
+      }
+    });
+  }
+});
 
 // WOW Feature: Wisdom Timeline
 function generateWisdomTimeline() {
